@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="stats">
+    <div class="stat-card"><div class="number">{{ total }}</div><div class="label">Total Tickets</div></div>
+    <div class="stat-card"><div class="number" style="color:#ffc107">{{ open_tickets }}</div><div class="label">Open</div></div>
+    <div class="stat-card"><div class="number" style="color:#17a2b8">{{ in_progress }}</div><div class="label">In Progress</div></div>
+    <div class="stat-card"><div class="number" style="color:#28a745">{{ closed }}</div><div class="label">Closed</div></div>
+</div>
+<div class="card" style="margin-top:20px">
+    <h2>🖥️ Server Status</h2>
+    <table>
+        <tr><th>Server</th><th>IP</th><th>Role</th><th>Status</th></tr>
+        {% for s in servers %}
+        <tr>
+            <td>{{ s.name }}</td><td>{{ s.ip }}</td><td>{{ s.role }}</td>
+            <td class="{{ 'online' if s.status == 'Online' else 'offline' }}">
+                {{ '✅' if s.status == 'Online' else '❌' }} {{ s.status }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="card">
+    <h2>🎫 Recent Tickets</h2>
+    <table>
+        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Created</th></tr>
+        {% for t in recent_tickets %}
+        <tr>
+            <td>#{{ t.id }}</td><td>{{ t.title }}</td>
+            <td><span class="badge badge-{{ t.priority|lower }}">{{ t.priority }}</span></td>
+            <td><span class="badge badge-{{ t.status|lower|replace(' ','-') }}">{{ t.status }}</span></td>
+            <td>{{ t.created_at }}</td>
+        </tr>
+        {% endfor %}
+        {% if not recent_tickets %}<tr><td colspan="5" style="text-align:center;color:#999">No tickets yet</td></tr>{% endif %}
+    </table>
+</div>
+<div class="card">
+    <h2>📋 Recent Logs from ELK</h2>
+    <table>
+        <tr><th>Timestamp</th><th>Host</th><th>Message</th></tr>
+        {% for log in logs %}
+        <tr>
+            <td style="font-size:12px">{{ log.get('@timestamp','')[:19] }}</td>
+            <td>{{ log.get('host',{}).get('name','unknown') }}</td>
+            <td style="font-size:12px">{{ log.get('message','')[:100] }}</td>
+        </tr>
+        {% endfor %}
+        {% if not logs %}<tr><td colspan="3" style="text-align:center;color:#999">No logs yet</td></tr>{% endif %}
+    </table>
+</div>
+{% endblock %}

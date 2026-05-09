@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+        <h2>🎫 All Tickets</h2>
+        <a href="/tickets/new" class="btn btn-primary">+ New Ticket</a>
+    </div>
+    <table>
+        <tr><th>ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Assigned To</th><th>Created</th><th>Actions</th></tr>
+        {% for t in tickets %}
+        <tr>
+            <td>#{{ t.id }}</td><td>{{ t.title }}</td>
+            <td><span class="badge badge-{{ t.priority|lower }}">{{ t.priority }}</span></td>
+            <td><span class="badge badge-{{ t.status|lower|replace(' ','-') }}">{{ t.status }}</span></td>
+            <td>{{ t.assigned_to }}</td><td>{{ t.created_at }}</td>
+            <td>
+                <form method="POST" action="/tickets/{{ t.id }}/update" style="display:inline">
+                    <select name="status" style="padding:4px;font-size:12px;border-radius:4px">
+                        <option {{ 'selected' if t.status=='Open' }}>Open</option>
+                        <option {{ 'selected' if t.status=='In Progress' }}>In Progress</option>
+                        <option {{ 'selected' if t.status=='Resolved' }}>Resolved</option>
+                        <option {{ 'selected' if t.status=='Closed' }}>Closed</option>
+                    </select>
+                    <button type="submit" class="btn btn-success" style="padding:4px 8px;font-size:12px">Update</button>
+                </form>
+                <form method="POST" action="/tickets/{{ t.id }}/delete" style="display:inline">
+                    <button type="submit" class="btn btn-danger" style="padding:4px 8px;font-size:12px">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if not tickets %}<tr><td colspan="7" style="text-align:center;color:#999;padding:30px">No tickets yet</td></tr>{% endif %}
+    </table>
+</div>
+{% endblock %}
